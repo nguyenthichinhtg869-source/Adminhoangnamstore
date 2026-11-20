@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HoangNam Store Admin - Duyệt Tiền Vào Acc, Dịch Vụ & Đồng Bộ Trực Tiếp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Be Vietnam Pro"', 'sans-serif'],
+                        display: ['"Space Grotesk"', 'sans-serif'],
+                    },
+                    colors: {
+                        gaming: {
+                            bg: '#06080d',
+                            panel: '#0a0e17',
+                            card: '#0e1320',
+                            cardHover: '#141c2f',
+                            border: '#1c263b',
+                            cyan: '#00d2ff',
+                            indigo: '#6366f1',
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 18px rgba(0, 210, 255, 0.25)',
+                        'neon-indigo': '0 0 22px rgba(99, 102, 241, 0.28)',
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        body {
+            background-color: #06080d;
+            color: #f1f5f9;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #06080d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00d2ff;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-header {
+            background: rgba(6, 8, 13, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gaming-bg text-slate-100 antialiased selection:bg-[#00d2ff]/25 selection:text-cyan-200">
+
+    <!-- ================= 1. MÀN HÌNH ĐĂNG NHẬP ADMIN ================= -->
+    <section id="adminLoginScreen" class="fixed inset-0 z-50 bg-gaming-bg/95 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-md bg-gaming-card border border-gaming-border rounded-3xl p-5 sm:p-6 shadow-neon-cyan space-y-5 my-auto">
+            <div class="text-center space-y-2">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#00d2ff] to-[#6366f1] p-[1.5px] shadow-neon-cyan">
+                    <div class="w-full h-full bg-gaming-bg rounded-[14px] flex items-center justify-center text-[#00d2ff] text-2xl">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                </div>
+                <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#6366f1]/15 border border-[#6366f1]/40 text-indigo-300 text-[11px] font-bold">
+                    <i class="fa-solid fa-link text-[10px]"></i> ĐỒNG BỘ HOANGNAMSHOPVIP
+                </div>
+                <h1 class="font-display font-bold text-xl sm:text-2xl text-white">
+                    HOANGNAM<span class="text-[#00d2ff]">STORE</span> <span class="text-indigo-400">ADMIN</span>
+                </h1>
+                <p class="text-xs text-slate-400 leading-relaxed">
+                    Xem mọi hoạt động trên shop, duyệt tiền vào acc và xử lý đơn dịch vụ / Acc Rank 20 trực tiếp.
+                </p>
+            </div>
+
+            <div id="adminLoginAlert" class="hidden p-3 rounded-xl bg-rose-950/80 border border-rose-500/60 text-rose-200 text-xs font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-rose-400 shrink-0"></i>
+                <span id="adminLoginAlertText"></span>
+            </div>
+
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Tài khoản Admin</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user-shield absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                        <input type="text" id="adminUserInput" required placeholder="Nhập tài khoản admin..."
+                            class="w-full bg-gaming-bg border border-gaming-border focus:border-[#00d2ff] rounded-xl pl-9 pr-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Mật khẩu Admin</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-key absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                        <input type="password" id="adminPassInput" required placeholder="Nhập mật khẩu admin..."
+                            class="w-full bg-gaming-bg border border-gaming-border focus:border-[#00d2ff] rounded-xl pl-9 pr-3 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                    <input type="checkbox" id="rememberAdminSession" checked class="w-4 h-4 accent-[#00d2ff] rounded">
+                    <span>Ghi nhớ phiên đăng nhập trên trình duyệt này</span>
+                </label>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    <button type="button" onclick="fillAndLoginAdmin()"
+                        class="py-3 px-3 rounded-xl bg-[#6366f1]/15 hover:bg-[#6366f1]/25 border border-[#6366f1]/45 text-indigo-200 font-extrabold text-xs sm:text-sm flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                        <i class="fa-solid fa-bolt"></i> Điền & Vào ngay
+                    </button>
+                    <button type="submit"
+                        class="py-3 px-3 rounded-xl bg-gradient-to-r from-[#00d2ff] to-[#6366f1] hover:opacity-95 text-slate-950 font-extrabold text-xs sm:text-sm shadow-neon-cyan flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                        <i class="fa-solid fa-right-to-bracket"></i> Đăng nhập
+                    </button>
+                </div>
+            </form>
+
+            <div class="p-3 rounded-2xl bg-gaming-bg border border-gaming-border text-xs space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400 font-medium">Tài khoản mặc định:</span>
+                    <button type="button" onclick="fillDemoAdminCredentials()" class="text-[#00d2ff] hover:underline font-bold text-[11px]">
+                        Điền thông tin
+                    </button>
+                </div>
+                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                    <div class="px-2.5 py-1.5 rounded-xl bg-gaming-card border border-gaming-border text-slate-300">
+                        User: <strong class="text-[#00d2ff]">admin</strong>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-xl bg-gaming-card border border-gaming-border text-slate-300">
+                        Pass: <strong class="text-amber-400">hoangnam2026</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                <a href="https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/"
+                    target="_top" rel="noopener noreferrer"
+                    onclick="navigateToShop(event, false)"
+                    class="py-2.5 px-3 rounded-xl bg-gaming-bg hover:bg-gaming-cardHover border border-[#00d2ff]/40 text-[#00d2ff] font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Mở hoangnamshopvip</span>
+                </a>
+                <a href="https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/"
+                    target="_blank" rel="noopener noreferrer"
+                    onclick="navigateToShop(event, true)"
+                    class="py-2.5 px-3 rounded-xl bg-gaming-bg hover:bg-gaming-cardHover border border-gaming-border text-slate-200 hover:text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-indigo-400"></i>
+                    <span>Mở tab mới</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 2. KHUNG QUẢN TRỊ CHÍNH ================= -->
+    <div id="adminAppShell" class="hidden min-h-screen flex flex-col">
+        <header class="sticky top-0 z-40 glass-header border-b border-gaming-border">
+            <div class="max-w-7xl mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-br from-[#00d2ff] to-[#6366f1] p-[1.5px] shrink-0 shadow-neon-cyan">
+                        <div class="w-full h-full bg-gaming-bg rounded-[10px] flex items-center justify-center text-[#00d2ff]">
+                            <i class="fa-solid fa-sliders text-xs sm:text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-display font-bold text-xs sm:text-base text-white truncate">
+                                HOANGNAM<span class="text-[#00d2ff]">STORE</span> <span class="text-indigo-400">ADMIN</span>
+                            </span>
+                            <span id="liveSyncBadge" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold shrink-0">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> hoangnamshopvip
+                            </span>
+                        </div>
+                        <p id="lastSyncStatusLabel" class="text-[10px] text-slate-400 truncate">Kênh: hoangnam_store_sync_v1 • Đang đồng bộ trực tiếp</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <a href="https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/"
+                        target="_top" rel="noopener noreferrer"
+                        onclick="navigateToShop(event, false)"
+                        class="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-gradient-to-r from-[#00d2ff] to-[#6366f1] hover:opacity-95 text-slate-950 font-extrabold text-xs flex items-center gap-1.5 shadow-neon-cyan active:scale-95 transition-transform">
+                        <i class="fa-solid fa-store"></i>
+                        <span>Vào Shop VIP</span>
+                    </a>
+
+                    <a href="https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/"
+                        target="_blank" rel="noopener noreferrer"
+                        onclick="navigateToShop(event, true)"
+                        title="Mở hoangnamshopvip trên tab mới"
+                        class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gaming-card hover:bg-gaming-cardHover border border-[#00d2ff]/40 text-[#00d2ff] flex items-center justify-center transition-colors active:scale-95">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs sm:text-sm"></i>
+                    </a>
+
+                    <button type="button" onclick="manualSyncRefresh(true)" title="Làm mới & phát tín hiệu đồng bộ"
+                        class="px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl bg-gaming-card hover:bg-gaming-cardHover border border-gaming-border hover:border-[#00d2ff]/40 text-slate-200 hover:text-[#00d2ff] font-bold text-xs flex items-center gap-1.5 active:scale-95 transition-transform">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span class="hidden md:inline">Làm mới</span>
+                    </button>
+
+                    <button type="button" onclick="handleAdminLogout()" title="Đăng xuất Admin"
+                        class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 flex items-center justify-center transition-colors">
+                        <i class="fa-solid fa-right-from-bracket text-xs sm:text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-3 sm:px-5 pb-2.5">
+                <nav class="flex items-center gap-1.5 overflow-x-auto no-scrollbar bg-gaming-panel p-1 rounded-2xl border border-gaming-border">
+                    <button type="button" id="nav-overview" onclick="switchAdminTab('overview')"
+                        class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap flex items-center gap-1.5 bg-gradient-to-r from-[#00d2ff] to-[#6366f1] text-slate-950 transition-all">
+                        <i class="fa-solid fa-radar"></i> Hoạt Động Shop
+                    </button>
+
+                    <button type="button" id="nav-topups" onclick="switchAdminTab('topups')"
+                        class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 text-slate-300 hover:text-white transition-all">
+                        <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i> Duyệt Tiền vào acc
+                        <span id="badgePendingTopups" class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-extrabold">0</span>
+                    </button>
+
+                    <button type="button" id="nav-orders" onclick="switchAdminTab('orders')"
+                        class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 text-slate-300 hover:text-white transition-all">
+                        <i class="fa-solid fa-receipt text-[#00d2ff]"></i> Dịch vụ
+                        <span id="badgePendingOrders" class="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[10px] font-extrabold">0</span>
+                    </button>
+
+                    <button type="button" id="nav-accounts" onclick="switchAdminTab('accounts')"
+                        class="admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 text-slate-300 hover:text-white transition-all">
+                        <i class="fa-solid fa-users text-indigo-400"></i> Tài Khoản Shop
+                        <span id="badgeTotalAccounts" class="px-1.5 py-0.2 rounded-full bg-[#6366f1]/20 text-indigo-300 border border-[#6366f1]/40 text-[10px] font-extrabold">0</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-4 space-y-5">
+
+            <!-- Thanh liên kết hoangnamshopvip & công cụ -->
+            <section class="p-3.5 rounded-2xl bg-gaming-panel border border-gaming-border flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                <div class="flex flex-wrap items-center gap-3 text-xs">
+                    <label class="flex items-center gap-2 cursor-pointer select-none">
+                        <input type="checkbox" id="autoRefundToggle" checked class="w-4 h-4 accent-[#00d2ff] rounded">
+                        <span class="font-semibold text-slate-200">
+                            Tự động hoàn số dư khi chuyển đơn dịch vụ thanh toán ví sang <strong class="text-rose-400">Từ Chối</strong>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="exportBackupJson()"
+                        class="px-3 py-1.5 rounded-xl bg-gaming-card hover:bg-gaming-cardHover border border-[#6366f1]/45 text-indigo-300 font-bold text-xs flex items-center gap-1.5 active:scale-95 transition-transform">
+                        <i class="fa-solid fa-file-export"></i> Xuất JSON
+                    </button>
+
+                    <a href="https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/"
+                        target="_top" rel="noopener noreferrer"
+                        onclick="navigateToShop(event, false)"
+                        class="px-3 py-1.5 rounded-xl bg-[#00d2ff]/15 hover:bg-[#00d2ff]/25 border border-[#00d2ff]/45 text-[#00d2ff] font-bold text-xs flex items-center gap-1.5 transition-colors truncate max-w-full">
+                        <i class="fa-solid fa-link shrink-0"></i>
+                        <span class="truncate">https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- ================= TAB 1: HOẠT ĐỘNG SHOP (TỔNG QUAN) ================= -->
+            <section id="panel-overview" class="admin-panel space-y-5">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border hover:border-[#00d2ff]/40 transition-colors space-y-1.5">
+                        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold">
+                            <span>Doanh thu dịch vụ</span>
+                            <div class="w-8 h-8 rounded-xl bg-[#00d2ff]/15 border border-[#00d2ff]/35 flex items-center justify-center text-[#00d2ff]">
+                                <i class="fa-solid fa-sack-dollar"></i>
+                            </div>
+                        </div>
+                        <div id="statCompletedRevenue" class="font-display font-extrabold text-lg sm:text-2xl text-[#00d2ff]">0đ</div>
+                        <p id="statCompletedOrdersCount" class="text-[11px] text-slate-400">0 đơn Đã Hoàn Thành</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border hover:border-amber-400/40 transition-colors space-y-1.5">
+                        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold">
+                            <span>Dịch vụ đang xử lí</span>
+                            <div class="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-400/35 flex items-center justify-center text-amber-400">
+                                <i class="fa-solid fa-hourglass-half"></i>
+                            </div>
+                        </div>
+                        <div id="statPendingOrders" class="font-display font-extrabold text-lg sm:text-2xl text-amber-400">0</div>
+                        <p id="statTotalOrdersSummary" class="text-[11px] text-slate-400">Tổng 0 đơn dịch vụ</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border hover:border-emerald-400/40 transition-colors space-y-1.5">
+                        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold">
+                            <span>Tiền chờ duyệt vào acc</span>
+                            <div class="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-400/35 flex items-center justify-center text-emerald-400">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                        </div>
+                        <div id="statPendingTopups" class="font-display font-extrabold text-lg sm:text-2xl text-emerald-400">0</div>
+                        <p id="statPendingTopupAmount" class="text-[11px] text-slate-400">Chờ duyệt: 0đ</p>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border hover:border-[#6366f1]/50 transition-colors space-y-1.5">
+                        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold">
+                            <span>Tài khoản trên shop</span>
+                            <div class="w-8 h-8 rounded-xl bg-[#6366f1]/15 border border-[#6366f1]/40 flex items-center justify-center text-indigo-400">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                        <div id="statTotalUsers" class="font-display font-extrabold text-lg sm:text-2xl text-indigo-300">0</div>
+                        <p id="statTotalUsersBalance" class="text-[11px] text-slate-400">Tổng số dư: 0đ</p>
+                    </div>
+                </div>
+
+                <!-- Mọi hoạt động đang diễn ra trên shop (Tài khoản đang online, Nạp tiền, Dịch vụ) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-display font-bold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-user-check text-indigo-400"></i> Tài Khoản Đang Hoạt Động
+                            </h3>
+                            <button type="button" onclick="switchAdminTab('accounts')" class="text-xs font-bold text-[#00d2ff] hover:underline">
+                                Tất cả →
+                            </button>
+                        </div>
+                        <div id="overviewLiveAccountsList" class="space-y-2.5"></div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-display font-bold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i> Duyệt Tiền Vào Acc
+                            </h3>
+                            <button type="button" onclick="switchAdminTab('topups')" class="text-xs font-bold text-[#00d2ff] hover:underline">
+                                Duyệt ngay →
+                            </button>
+                        </div>
+                        <div id="overviewTopupsList" class="space-y-2.5"></div>
+                    </div>
+
+                    <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-display font-bold text-sm text-white flex items-center gap-2">
+                                <i class="fa-solid fa-receipt text-[#00d2ff]"></i> Đơn Dịch Vụ / Acc
+                            </h3>
+                            <button type="button" onclick="switchAdminTab('orders')" class="text-xs font-bold text-[#00d2ff] hover:underline">
+                                Xử lý →
+                            </button>
+                        </div>
+                        <div id="overviewOrdersList" class="space-y-2.5"></div>
+                    </div>
+                </div>
+
+                <!-- Dòng sự kiện hoạt động thực tế trên hoangnamshopvip -->
+                <div class="p-4 rounded-2xl bg-gaming-card border border-gaming-border space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <h3 class="font-display font-bold text-sm text-white flex items-center gap-2">
+                            <i class="fa-solid fa-wave-square text-[#00d2ff]"></i> Dòng Hoạt Động Trực Tiếp Từ Shop
+                        </h3>
+                        <button type="button" onclick="clearSyncLogs()" class="text-[11px] font-bold text-slate-400 hover:text-rose-300">
+                            Xóa nhật ký
+                        </button>
+                    </div>
+                    <div id="syncLogContainer" class="max-h-56 overflow-y-auto space-y-1.5 text-xs font-mono"></div>
+                </div>
+            </section>
+
+            <!-- ================= TAB 2: DUYỆT TIỀN VÀO ACC ================= -->
+            <section id="panel-topups" class="admin-panel hidden space-y-3.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div>
+                        <h2 class="font-display font-bold text-base sm:text-lg text-white">Duyệt Tiền Vào Acc & Thẻ Cào</h2>
+                        <p class="text-xs text-slate-400">Bấm <strong>Duyệt vào acc</strong> để cộng tiền trực tiếp vào số dư tài khoản khách và đồng bộ ngay sang shop.</p>
+                    </div>
+
+                    <select id="topupStatusFilter" onchange="renderTopupsTab()"
+                        class="bg-gaming-card border border-gaming-border focus:border-[#00d2ff] rounded-xl px-3 py-2 text-xs text-slate-200 font-semibold focus:outline-none self-start sm:self-auto">
+                        <option value="all">Tất cả yêu cầu nạp</option>
+                        <option value="Chờ Duyệt">Chờ Duyệt</option>
+                        <option value="Đã Duyệt">Đã Duyệt</option>
+                        <option value="Từ Chối">Từ Chối</option>
+                    </select>
+                </div>
+
+                <div id="adminTopupsList" class="space-y-3"></div>
+            </section>
+
+            <!-- ================= TAB 3: DỊCH VỤ (ĐƠN HÀNG & ACC RANK 20) ================= -->
+            <section id="panel-orders" class="admin-panel hidden space-y-3.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div>
+                        <h2 class="font-display font-bold text-base sm:text-lg text-white">Quản Lý Dịch Vụ & Đơn Hàng (#HN001, #HN002...)</h2>
+                        <p class="text-xs text-slate-400">Duyệt / Hoàn thành / Từ chối đơn vật phẩm PS99 & Acc Rank 20 đồng bộ trực tiếp với shop.</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <select id="orderStatusFilter" onchange="renderOrdersTab()"
+                            class="bg-gaming-card border border-gaming-border focus:border-[#00d2ff] rounded-xl px-3 py-2 text-xs text-slate-200 font-semibold focus:outline-none">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="Đang xử Lí">Đang xử Lí</option>
+                            <option value="Đã Hoàn Thành">Đã Hoàn Thành</option>
+                            <option value="Từ Chối">Từ Chối</option>
+                        </select>
+
+                        <div class="relative flex-1 sm:w-60">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                            <input type="text" id="orderSearchInput" oninput="renderOrdersTab()"
+                                placeholder="Tìm mã #HN001, user, dịch vụ..."
+                                class="w-full bg-gaming-card border border-gaming-border focus:border-[#00d2ff] rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="adminOrdersList" class="space-y-3"></div>
+            </section>
+
+            <!-- ================= TAB 4: TÀI KHOẢN KHÁCH HÀNG ================= -->
+            <section id="panel-accounts" class="admin-panel hidden space-y-3.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div>
+                        <h2 class="font-display font-bold text-base sm:text-lg text-white">Từng Tài Khoản Trên HoangNam Shop VIP</h2>
+                        <p class="text-xs text-slate-400">Xem chi tiết từng tài khoản, số dư, đơn dịch vụ, lịch sử nạp tiền và cộng/trừ số dư trực tiếp.</p>
+                    </div>
+
+                    <div class="relative sm:w-64">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs"></i>
+                        <input type="text" id="accountSearchInput" oninput="renderAccountsTab()"
+                            placeholder="Tìm tên tài khoản..."
+                            class="w-full bg-gaming-card border border-gaming-border focus:border-[#00d2ff] rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div id="adminAccountCardsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+
+                <div class="bg-gaming-card border border-gaming-border rounded-2xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-gaming-panel border-b border-gaming-border text-slate-400 uppercase text-[11px]">
+                                    <th class="py-3 px-3.5 font-bold">Tài khoản</th>
+                                    <th class="py-3 px-3.5 font-bold">Số dư hiện tại</th>
+                                    <th class="py-3 px-3.5 font-bold text-center">Đơn dịch vụ</th>
+                                    <th class="py-3 px-3.5 font-bold">Tổng nạp (Đã duyệt)</th>
+                                    <th class="py-3 px-3.5 font-bold text-right">Xem & Điều chỉnh</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminAccountsTableBody" class="divide-y divide-gaming-border/70"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-gaming-card border border-gaming-border flex flex-wrap items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-xl bg-gaming-bg border border-gaming-border flex items-center justify-center text-[#00d2ff]">
+                            <i class="fa-solid fa-wallet"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-white">Ví Khách / Phiên Chưa Đăng Nhập</div>
+                            <div class="text-[11px] text-slate-400">Số dư hiện tại: <strong id="guestBalanceValue" class="text-amber-400">0đ</strong></div>
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" onclick="adjustGuestBalance(10000)" class="px-2.5 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-bold text-[11px]">+10k</button>
+                        <button type="button" onclick="adjustGuestBalance(50000)" class="px-2.5 py-1.5 rounded-lg bg-[#00d2ff]/15 hover:bg-[#00d2ff]/25 border border-[#00d2ff]/40 text-[#00d2ff] font-bold text-[11px]">+50k</button>
+                        <button type="button" onclick="adjustGuestBalance(-10000)" class="px-2.5 py-1.5 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold text-[11px]">-10k</button>
+                        <button type="button" onclick="setGuestBalanceDirect()" class="px-2.5 py-1.5 rounded-lg bg-[#6366f1]/20 hover:bg-[#6366f1]/30 border border-[#6366f1]/45 text-indigo-200 font-bold text-[11px]">Đặt số dư</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal Chi Tiết Từng Tài Khoản -->
+        <div id="accountDetailModal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="w-full max-w-2xl bg-gaming-card border-t sm:border border-gaming-border rounded-t-3xl sm:rounded-3xl max-h-[92vh] flex flex-col overflow-hidden shadow-neon-cyan">
+                <div class="px-4 py-3.5 border-b border-gaming-border flex items-center justify-between gap-2 shrink-0 bg-gaming-panel">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <i class="fa-solid fa-id-card text-[#00d2ff]"></i>
+                        <h3 class="font-display font-bold text-sm sm:text-base text-white truncate">CHI TIẾT TÀI KHOẢN TRÊN SHOP VIP</h3>
+                    </div>
+                    <button type="button" onclick="closeAccountDetailModal()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center shrink-0">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div id="accountDetailModalBody" class="p-4 overflow-y-auto space-y-4 text-xs"></div>
+            </div>
+        </div>
+
+        <footer class="mt-8 border-t border-gaming-border bg-gaming-panel py-4 px-3 text-center text-xs text-slate-400 space-y-1.5">
+            <p>© 2026 <strong class="text-white">HoangNam Store</strong> Admin. All rights reserved.</p>
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                <a href="https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/"
+                    target="_top" rel="noopener noreferrer"
+                    onclick="navigateToShop(event, false)"
+                    class="text-[#00d2ff] hover:underline font-bold inline-flex items-center gap-1">
+                    <i class="fa-solid fa-store"></i> Vào Shop VIP
+                </a>
+                <span>•</span>
+                <a href="https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/"
+                    target="_blank" rel="noopener noreferrer"
+                    onclick="navigateToShop(event, true)"
+                    class="text-indigo-300 hover:underline font-bold inline-flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Mở tab mới
+                </a>
+                <span>•</span>
+                <span>Zalo / SĐT: <strong class="text-emerald-400">0783167978</strong></span>
+            </div>
+        </footer>
+    </div>
+
+    <div id="toastContainer" class="fixed bottom-4 right-3 left-3 sm:left-auto sm:w-80 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <script>
+        const SHOP_URL = 'https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/';
+        const SYNC_CHANNEL_NAME = 'hoangnam_store_sync_v1';
+
+        const STORAGE_KEYS = {
+            users: 'hoangnam_store_v5_users',
+            currentUser: 'hoangnam_store_v5_current_user',
+            guestBalance: 'hoangnam_store_v5_guest_balance',
+            cart: 'hoangnam_store_v5_cart',
+            orders: 'hoangnam_store_v5_orders',
+            topups: 'hoangnam_store_v5_topups',
+            orderSeq: 'hoangnam_store_v5_order_seq',
+            integrity: 'hoangnam_store_v5_integrity_sig',
+            activityLog: 'hoangnam_store_v5_activity_log'
+        };
+
+        const ADMIN_SESSION_STORAGE = 'hoangnam_store_v5_admin_persist';
+        const ADMIN_SESSION_TEMP = 'hoangnam_store_v5_admin_session';
+        const ADMIN_CREDENTIALS = {
+            username: 'admin',
+            password: 'hoangnam2026'
+        };
+
+        let activeAdminTab = 'overview';
+        let syncChannel = null;
+        let lastSnapshotSignature = '';
+        let syncLogs = [];
+        let inspectedAccountLower = null;
+
+        function safeJsonParse(raw, fallback) {
+            try {
+                const val = JSON.parse(raw);
+                return val !== null && val !== undefined ? val : fallback;
+            } catch (_) {
+                return fallback;
+            }
+        }
+
+        function formatVND(amount) {
+            return Number(amount || 0).toLocaleString('vi-VN') + 'đ';
+        }
+
+        function computeStateChecksum(payloadObj) {
+            const envSalt = 'hoangnam_shopvip_v5::https://nguyenthichinhtg869-source.github.io/hoangnamshopvip/';
+            const source = `${envSalt}::${JSON.stringify(payloadObj)}`;
+            let h1 = 0x811c9dc5;
+            let h2 = 0x01000193;
+            for (let i = 0; i < source.length; i++) {
+                const ch = source.charCodeAt(i);
+                h1 ^= ch;
+                h1 = Math.imul(h1, 0x01000193);
+                h2 ^= (ch + (i % 31));
+                h2 = Math.imul(h2, 0x85ebca6b);
+            }
+            return `${(h1 >>> 0).toString(16).padStart(8, '0')}${(h2 >>> 0).toString(16).padStart(8, '0')}`;
+        }
+
+        function getUsers() {
+            const arr = safeJsonParse(localStorage.getItem(STORAGE_KEYS.users), []);
+            return Array.isArray(arr) ? arr : [];
+        }
+
+        function saveUsers(arr) {
+            localStorage.setItem(STORAGE_KEYS.users, JSON.stringify(arr));
+        }
+
+        function getCurrentUser() {
+            return localStorage.getItem(STORAGE_KEYS.currentUser) || null;
+        }
+
+        function getGuestBalance() {
+            const val = parseInt(localStorage.getItem(STORAGE_KEYS.guestBalance) || '0', 10);
+            return Number.isNaN(val) || val < 0 ? 0 : val;
+        }
+
+        function setGuestBalance(val) {
+            localStorage.setItem(STORAGE_KEYS.guestBalance, String(Math.max(0, Math.round(val))));
+        }
+
+        function getOrders() {
+            const arr = safeJsonParse(localStorage.getItem(STORAGE_KEYS.orders), []);
+            return Array.isArray(arr) ? arr : [];
+        }
+
+        function saveOrders(arr) {
+            localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(arr));
+        }
+
+        function getTopups() {
+            const arr = safeJsonParse(localStorage.getItem(STORAGE_KEYS.topups), []);
+            return Array.isArray(arr) ? arr : [];
+        }
+
+        function saveTopups(arr) {
+            localStorage.setItem(STORAGE_KEYS.topups, JSON.stringify(arr));
+        }
+
+        function getOrderSeq() {
+            const raw = parseInt(localStorage.getItem(STORAGE_KEYS.orderSeq) || '0', 10);
+            let seq = Number.isNaN(raw) || raw < 0 ? 0 : raw;
+            getOrders().forEach(ord => {
+                const m = String(ord && ord.id ? ord.id : '').trim().match(/^#?HN(\d+)$/i);
+                if (m) {
+                    const n = parseInt(m[1], 10);
+                    if (!Number.isNaN(n) && n > seq) seq = n;
+                }
+            });
+            return seq;
+        }
+
+        function nextOrderCode() {
+            const next = getOrderSeq() + 1;
+            localStorage.setItem(STORAGE_KEYS.orderSeq, String(next));
+            return `HN${String(next).padStart(3, '0')}`;
+        }
+
+        function refreshIntegritySignature() {
+            const sig = computeStateChecksum({
+                users: getUsers(),
+                currentUser: getCurrentUser(),
+                guestBalance: getGuestBalance(),
+                guestCart: safeJsonParse(localStorage.getItem('hoangnam_store_v5_guest_cart'), []),
+                allOrders: getOrders(),
+                allTopups: getTopups(),
+                orderSeq: getOrderSeq()
+            });
+            localStorage.setItem(STORAGE_KEYS.integrity, sig);
+            return sig;
+        }
+
+        function addSyncLog(message) {
+            const timeStr = new Date().toLocaleTimeString('vi-VN');
+            syncLogs.unshift({ time: timeStr, message });
+            if (syncLogs.length > 50) syncLogs.length = 50;
+            renderSyncLogs();
+        }
+
+        function clearSyncLogs() {
+            syncLogs = [];
+            localStorage.removeItem(STORAGE_KEYS.activityLog);
+            renderSyncLogs();
+        }
+
+        function mergeStoredActivityLogs() {
+            const stored = safeJsonParse(localStorage.getItem(STORAGE_KEYS.activityLog), []);
+            if (!Array.isArray(stored) || stored.length === 0) return;
+            const seen = new Set(syncLogs.map(x => `${x.time}|${x.message}`));
+            stored.slice(0, 25).reverse().forEach(item => {
+                if (!item || !item.detail) return;
+                const msg = `[${item.type || 'SHOP'}] ${item.actor || 'Khách'}: ${item.detail}`;
+                const t = item.time || '';
+                const key = `${t}|${msg}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    syncLogs.unshift({ time: t, message: msg });
+                }
+            });
+            if (syncLogs.length > 60) syncLogs.length = 60;
+        }
+
+        function renderSyncLogs() {
+            const container = document.getElementById('syncLogContainer');
+            if (!container) return;
+            if (syncLogs.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 py-2">Chưa có hoạt động mới từ hoangnamshopvip.</p>`;
+                return;
+            }
+            container.innerHTML = syncLogs.map(entry => `
+                <div class="px-3 py-1.5 rounded-xl bg-gaming-bg border border-gaming-border/70 flex items-center justify-between gap-2 text-[11px]">
+                    <span class="text-slate-200 truncate"><span class="text-[#00d2ff] mr-1.5">●</span>${entry.message}</span>
+                    <span class="text-slate-500 shrink-0">${entry.time}</span>
+                </div>
+            `).join('');
+        }
+
+        function computeSnapshotSignature() {
+            return [
+                localStorage.getItem(STORAGE_KEYS.users) || '[]',
+                localStorage.getItem(STORAGE_KEYS.currentUser) || '',
+                localStorage.getItem(STORAGE_KEYS.guestBalance) || '0',
+                localStorage.getItem(STORAGE_KEYS.orders) || '[]',
+                localStorage.getItem(STORAGE_KEYS.topups) || '[]',
+                localStorage.getItem(STORAGE_KEYS.orderSeq) || '0',
+                localStorage.getItem(STORAGE_KEYS.activityLog) || '[]'
+            ].join('||');
+        }
+
+        function emitStoreSync(reason = 'UPDATE') {
+            refreshIntegritySignature();
+            lastSnapshotSignature = computeSnapshotSignature();
+            const nowStr = new Date().toLocaleTimeString('vi-VN');
+            const statusLabel = document.getElementById('lastSyncStatusLabel');
+            if (statusLabel) {
+                statusLabel.textContent = `Đồng bộ lúc ${nowStr} • ${reason}`;
+            }
+
+            try {
+                if (syncChannel) {
+                    syncChannel.postMessage({
+                        type: 'STATE_UPDATED',
+                        source: 'admin.html',
+                        shopUrl: SHOP_URL,
+                        reason,
+                        timestamp: Date.now()
+                    });
+                }
+            } catch (_) {
+                // Fallback qua localStorage
+            }
+
+            addSyncLog(`Đã đồng bộ tới hoangnamshopvip (${reason})`);
+        }
+
+        function setupRealtimeSync() {
+            try {
+                if ('BroadcastChannel' in window) {
+                    syncChannel = new BroadcastChannel(SYNC_CHANNEL_NAME);
+                    syncChannel.onmessage = (event) => {
+                        if (event && event.data && event.data.type === 'STATE_UPDATED') {
+                            const src = event.data.source || 'shop';
+                            const rsn = event.data.reason || 'STATE_UPDATED';
+                            lastSnapshotSignature = computeSnapshotSignature();
+                            mergeStoredActivityLogs();
+                            renderAllAdminViews();
+                            const nowStr = new Date().toLocaleTimeString('vi-VN');
+                            const statusLabel = document.getElementById('lastSyncStatusLabel');
+                            if (statusLabel) {
+                                statusLabel.textContent = `Nhận tín hiệu lúc ${nowStr} từ ${src}`;
+                            }
+                            if (src !== 'admin.html') {
+                                addSyncLog(`Hoạt động mới từ ${src}: ${rsn}`);
+                                showToast('Có hoạt động mới từ HoangNam Shop VIP!', 'success');
+                            }
+                        }
+                    };
+                }
+            } catch (_) {
+                // Bỏ qua nếu môi trường không hỗ trợ BroadcastChannel
+            }
+
+            window.addEventListener('storage', (event) => {
+                if (!event.key || Object.values(STORAGE_KEYS).includes(event.key)) {
+                    lastSnapshotSignature = computeSnapshotSignature();
+                    mergeStoredActivityLogs();
+                    renderAllAdminViews();
+                }
+            });
+
+            setInterval(() => {
+                const sig = computeSnapshotSignature();
+                if (sig !== lastSnapshotSignature) {
+                    lastSnapshotSignature = sig;
+                    mergeStoredActivityLogs();
+                    renderAllAdminViews();
+                }
+            }, 1200);
+        }
+
+        function manualSyncRefresh(showMsg = true) {
+            lastSnapshotSignature = computeSnapshotSignature();
+            mergeStoredActivityLogs();
+            renderAllAdminViews();
+            emitStoreSync('MANUAL_REFRESH');
+            if (showMsg) {
+                showToast('Đã làm mới & đồng bộ với hoangnamshopvip!', 'success');
+            }
+        }
+
+        function navigateToShop(event, openNewTab = false) {
+            if (event) event.preventDefault();
+            emitStoreSync('OPEN_SHOP_VIP');
+            if (openNewTab) {
+                const win = window.open(SHOP_URL, '_blank', 'noopener,noreferrer');
+                if (!win) window.location.href = SHOP_URL;
+                return;
+            }
+            try {
+                if (window.top && window.top !== window.self) {
+                    window.top.location.href = SHOP_URL;
+                    return;
+                }
+            } catch (_) {
+                // Fallback chuyển hướng trực tiếp
+            }
+            window.location.href = SHOP_URL;
+        }
+
+        function fillDemoAdminCredentials() {
+            document.getElementById('adminUserInput').value = ADMIN_CREDENTIALS.username;
+            document.getElementById('adminPassInput').value = ADMIN_CREDENTIALS.password;
+            document.getElementById('adminLoginAlert').classList.add('hidden');
+        }
+
+        function fillAndLoginAdmin() {
+            fillDemoAdminCredentials();
+            persistAdminSession();
+            showAdminShell();
+            showToast('Đăng nhập Admin thành công!', 'success');
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const user = (document.getElementById('adminUserInput').value || '').trim();
+            const pass = document.getElementById('adminPassInput').value || '';
+            const alertBox = document.getElementById('adminLoginAlert');
+            const alertText = document.getElementById('adminLoginAlertText');
+
+            if (user === ADMIN_CREDENTIALS.username && pass === ADMIN_CREDENTIALS.password) {
+                persistAdminSession();
+                alertBox.classList.add('hidden');
+                showAdminShell();
+                showToast('Đăng nhập Admin thành công!', 'success');
+            } else {
+                alertText.textContent = 'Sai tài khoản hoặc mật khẩu (mặc định: admin / hoangnam2026).';
+                alertBox.classList.remove('hidden');
+            }
+        }
+
+        function persistAdminSession() {
+            const remember = Boolean(document.getElementById('rememberAdminSession')?.checked);
+            sessionStorage.setItem(ADMIN_SESSION_TEMP, '1');
+            if (remember) {
+                localStorage.setItem(ADMIN_SESSION_STORAGE, '1');
+            } else {
+                localStorage.removeItem(ADMIN_SESSION_STORAGE);
+            }
+        }
+
+        function hasValidAdminSession() {
+            return sessionStorage.getItem(ADMIN_SESSION_TEMP) === '1' || localStorage.getItem(ADMIN_SESSION_STORAGE) === '1';
+        }
+
+        function handleAdminLogout() {
+            sessionStorage.removeItem(ADMIN_SESSION_TEMP);
+            localStorage.removeItem(ADMIN_SESSION_STORAGE);
+            document.getElementById('adminAppShell').classList.add('hidden');
+            document.getElementById('adminLoginScreen').classList.remove('hidden');
+            document.getElementById('adminPassInput').value = '';
+            showToast('Đã đăng xuất phiên Admin.', 'success');
+        }
+
+        function showAdminShell() {
+            document.getElementById('adminLoginScreen').classList.add('hidden');
+            document.getElementById('adminAppShell').classList.remove('hidden');
+            lastSnapshotSignature = computeSnapshotSignature();
+            mergeStoredActivityLogs();
+            switchAdminTab(activeAdminTab);
+            renderAllAdminViews();
+            addSyncLog('Admin đã mở bảng điều khiển hoangnamshopvip');
+        }
+
+        function switchAdminTab(tabName) {
+            activeAdminTab = ['overview', 'topups', 'orders', 'accounts'].includes(tabName) ? tabName : 'overview';
+            ['overview', 'topups', 'orders', 'accounts'].forEach(t => {
+                const btn = document.getElementById(`nav-${t}`);
+                const panel = document.getElementById(`panel-${t}`);
+                if (btn) {
+                    if (t === activeAdminTab) {
+                        btn.className = 'admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap flex items-center gap-1.5 bg-gradient-to-r from-[#00d2ff] to-[#6366f1] text-slate-950 transition-all';
+                    } else {
+                        btn.className = 'admin-tab-btn px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap flex items-center gap-1.5 text-slate-300 hover:text-white transition-all';
+                    }
+                }
+                if (panel) {
+                    panel.classList.toggle('hidden', t !== activeAdminTab);
+                }
+            });
+            renderAllAdminViews();
+            renderSyncLogs();
+        }
+
+        function renderOverviewTab() {
+            const users = getUsers();
+            const orders = getOrders().filter(o => o.historyKind !== 'topup');
+            const topups = getTopups();
+            const guestBal = getGuestBalance();
+            const activeUser = getCurrentUser();
+
+            const completedOrders = orders.filter(o => o.status === 'Đã Hoàn Thành');
+            const completedRevenue = completedOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+            const pendingOrders = orders.filter(o => (o.status || 'Đang xử Lí') === 'Đang xử Lí');
+
+            const pendingTopups = topups.filter(t => (t.status || 'Chờ Duyệt') === 'Chờ Duyệt');
+            const pendingTopupSum = pendingTopups.reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+            const totalUsersBalance = users.reduce((sum, u) => sum + (Number(u.balance) || 0), 0) + guestBal;
+
+            document.getElementById('statCompletedRevenue').textContent = formatVND(completedRevenue);
+            document.getElementById('statCompletedOrdersCount').textContent = `${completedOrders.length} đơn Đã Hoàn Thành`;
+
+            document.getElementById('statPendingOrders').textContent = pendingOrders.length;
+            document.getElementById('statTotalOrdersSummary').textContent = `Tổng ${orders.length} đơn dịch vụ`;
+
+            document.getElementById('statPendingTopups').textContent = pendingTopups.length;
+            document.getElementById('statPendingTopupAmount').textContent = `Chờ duyệt: ${formatVND(pendingTopupSum)}`;
+
+            document.getElementById('statTotalUsers').textContent = users.length;
+            document.getElementById('statTotalUsersBalance').textContent = `Tổng số dư: ${formatVND(totalUsersBalance)}`;
+
+            document.getElementById('badgePendingOrders').textContent = pendingOrders.length;
+            document.getElementById('badgePendingTopups').textContent = pendingTopups.length;
+            document.getElementById('badgeTotalAccounts').textContent = users.length;
+
+            // Cột 1: Tài khoản trên shop
+            const liveAccBox = document.getElementById('overviewLiveAccountsList');
+            if (liveAccBox) {
+                if (users.length === 0) {
+                    liveAccBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Chưa có tài khoản nào trên shop (${activeUser ? `Đang dùng: ${activeUser}` : `Ví khách: ${formatVND(guestBal)}`}).</p>`;
+                } else {
+                    liveAccBox.innerHTML = users.slice(0, 4).map(u => {
+                        const isCurr = Boolean(activeUser && String(u.username).toLowerCase() === String(activeUser).toLowerCase());
+                        const safeName = String(u.username || '').replace(/'/g, "\\'");
+                        return `
+                            <div onclick="openAccountDetailModal('${safeName}')"
+                                class="cursor-pointer p-3 rounded-xl bg-gaming-bg hover:bg-gaming-cardHover border border-gaming-border flex items-center justify-between gap-2 text-xs transition-colors">
+                                <div class="min-w-0">
+                                    <div class="font-bold text-white truncate flex items-center gap-1.5">
+                                        <span>${u.username}</span>
+                                        ${isCurr ? `<span class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px]">Active</span>` : ''}
+                                    </div>
+                                    <div class="text-[11px] text-slate-400 truncate">Bấm để xem lịch sử & chỉnh số dư</div>
+                                </div>
+                                <div class="font-display font-extrabold text-[#00d2ff] shrink-0">${formatVND(u.balance || 0)}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Cột 2: Duyệt tiền vào acc
+            const topupBox = document.getElementById('overviewTopupsList');
+            if (topupBox) {
+                if (topups.length === 0) {
+                    topupBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Chưa có yêu cầu nạp tiền nào.</p>`;
+                } else {
+                    topupBox.innerHTML = topups.slice(0, 4).map(t => {
+                        const st = t.status || 'Chờ Duyệt';
+                        return `
+                            <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border flex items-center justify-between gap-2 text-xs">
+                                <div class="min-w-0">
+                                    <div class="font-bold text-white truncate"><span class="font-mono text-[#00d2ff]">#${t.id}</span> • ${t.username || 'Khách'}</div>
+                                    <div class="text-[11px] text-slate-400 truncate">${t.method || 'Nạp tiền'} • ${t.time || ''}</div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <div class="font-display font-extrabold text-emerald-400">+${formatVND(t.amount)}</div>
+                                    <span class="text-[10px] font-bold ${
+                                        st === 'Đã Duyệt' ? 'text-emerald-300' :
+                                        st === 'Từ Chối' ? 'text-rose-400' : 'text-amber-300'
+                                    }">${st}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+
+            // Cột 3: Dịch vụ / Đơn hàng
+            const orderBox = document.getElementById('overviewOrdersList');
+            if (orderBox) {
+                if (orders.length === 0) {
+                    orderBox.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">Chưa có đơn dịch vụ nào.</p>`;
+                } else {
+                    orderBox.innerHTML = orders.slice(0, 4).map(o => {
+                        const st = o.status || 'Đang xử Lí';
+                        return `
+                            <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border flex items-center justify-between gap-2 text-xs">
+                                <div class="min-w-0">
+                                    <div class="font-bold text-white truncate"><span class="font-mono text-[#00d2ff]">#${o.id}</span> • ${o.items || ''}</div>
+                                    <div class="text-[11px] text-slate-400 truncate">${o.username || ''} • ${o.time || ''}</div>
+                                </div>
+                                <div class="text-right shrink-0">
+                                    <div class="font-display font-extrabold text-amber-400">${formatVND(o.total)}</div>
+                                    <span class="text-[10px] font-bold ${
+                                        st === 'Đã Hoàn Thành' ? 'text-emerald-300' :
+                                        st === 'Từ Chối' ? 'text-rose-400' : 'text-amber-300'
+                                    }">${st}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            }
+        }
+
+        function getOrderStatusBadge(status) {
+            if (status === 'Đã Hoàn Thành') {
+                return `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-bold inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Đã Hoàn Thành</span>`;
+            }
+            if (status === 'Từ Chối') {
+                return `<span class="px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold inline-flex items-center gap-1"><i class="fa-solid fa-circle-xmark"></i> Từ Chối</span>`;
+            }
+            return `<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold inline-flex items-center gap-1"><i class="fa-solid fa-hourglass-half"></i> Đang xử Lí</span>`;
+        }
+
+        function renderOrdersTab() {
+            const listEl = document.getElementById('adminOrdersList');
+            if (!listEl) return;
+
+            const statusFilter = document.getElementById('orderStatusFilter')?.value || 'all';
+            const search = (document.getElementById('orderSearchInput')?.value || '').trim().toLowerCase();
+
+            const orders = getOrders().filter(o => o.historyKind !== 'topup');
+            const filtered = orders.filter(ord => {
+                const st = ord.status || 'Đang xử Lí';
+                const matchStatus = statusFilter === 'all' || st === statusFilter;
+                const idLower = String(ord.id || '').toLowerCase();
+                const matchSearch = !search ||
+                    idLower.includes(search) ||
+                    `#${idLower}`.includes(search) ||
+                    String(ord.username || '').toLowerCase().includes(search) ||
+                    String(ord.webUsername || '').toLowerCase().includes(search) ||
+                    String(ord.items || '').toLowerCase().includes(search);
+                return matchStatus && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="p-8 rounded-2xl bg-gaming-card border border-gaming-border text-center space-y-1.5">
+                        <div class="w-11 h-11 mx-auto rounded-2xl bg-gaming-bg border border-gaming-border flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <p class="text-sm font-bold text-white">Không có đơn dịch vụ nào khớp bộ lọc</p>
+                        <p class="text-xs text-slate-400">Khi khách mua vật phẩm hoặc Acc Rank 20 trên hoangnamshopvip, đơn (#HN001...) sẽ xuất hiện tại đây.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(ord => {
+                const st = ord.status || 'Đang xử Lí';
+                return `
+                    <article class="p-4 rounded-2xl bg-gaming-card border border-gaming-border hover:border-[#00d2ff]/40 transition-colors space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-2.5 border-b border-gaming-border/70">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-mono font-extrabold text-sm sm:text-base text-[#00d2ff]">#${ord.id}</span>
+                                ${getOrderStatusBadge(st)}
+                                ${ord.refunded ? `<span class="px-2 py-0.5 rounded-md bg-[#6366f1]/15 border border-[#6366f1]/40 text-indigo-300 text-[10px] font-bold">Đã hoàn tiền ví</span>` : ''}
+                            </div>
+                            <span class="text-[11px] text-slate-400"><i class="fa-regular fa-clock mr-1"></i>${ord.time || ''}</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+                            <div class="p-2.5 rounded-xl bg-gaming-bg border border-gaming-border/70">
+                                <div class="text-[10px] text-slate-400 uppercase font-semibold">Tài khoản / Người nhận</div>
+                                <div class="font-bold text-white mt-0.5 break-words">${ord.username || 'Khách'}</div>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-gaming-bg border border-gaming-border/70 lg:col-span-2">
+                                <div class="text-[10px] text-slate-400 uppercase font-semibold">Dịch vụ / Loại hàng</div>
+                                <div class="font-bold text-cyan-200 mt-0.5">${ord.items || ''}</div>
+                            </div>
+                            <div class="p-2.5 rounded-xl bg-gaming-bg border border-gaming-border/70">
+                                <div class="text-[10px] text-slate-400 uppercase font-semibold">Giá tiền</div>
+                                <div class="font-display font-extrabold text-sm sm:text-base text-amber-400 mt-0.5">${formatVND(ord.total)}</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">${ord.method || ''}</div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-gaming-border/70 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                            <span class="text-xs font-semibold text-slate-300">Cập nhật trạng thái dịch vụ:</span>
+                            <div class="grid grid-cols-3 sm:flex items-center gap-2">
+                                <button type="button" onclick="updateOrderStatus('${ord.id}', 'Đã Hoàn Thành')"
+                                    class="py-2 px-3 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 active:scale-95 transition-transform ${
+                                        st === 'Đã Hoàn Thành'
+                                            ? 'bg-emerald-500 text-slate-950 ring-2 ring-emerald-300/50'
+                                            : 'bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/40'
+                                    }">
+                                    <i class="fa-solid fa-check"></i> Đã Hoàn Thành
+                                </button>
+
+                                <button type="button" onclick="updateOrderStatus('${ord.id}', 'Đang xử Lí')"
+                                    class="py-2 px-3 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 active:scale-95 transition-transform ${
+                                        st === 'Đang xử Lí'
+                                            ? 'bg-amber-400 text-slate-950 ring-2 ring-amber-200/50'
+                                            : 'bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40'
+                                    }">
+                                    <i class="fa-solid fa-spinner"></i> Đang xử Lí
+                                </button>
+
+                                <button type="button" onclick="updateOrderStatus('${ord.id}', 'Từ Chối')"
+                                    class="py-2 px-3 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 active:scale-95 transition-transform ${
+                                        st === 'Từ Chối'
+                                            ? 'bg-rose-500 text-white ring-2 ring-rose-300/50'
+                                            : 'bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/40'
+                                    }">
+                                    <i class="fa-solid fa-ban"></i> Từ Chối
+                                </button>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function addBalanceToTargetAccount(customerInfo, amount) {
+            const safeAmount = Math.max(0, Math.round(Number(amount) || 0));
+            if (safeAmount <= 0) return { targetName: 'Ví khách', matchedUser: false };
+
+            const users = getUsers();
+            const raw = String(customerInfo || '').trim();
+            const parenMatch = raw.match(/\(([^)]+)\)\s*$/);
+            const candidate = (parenMatch ? parenMatch[1] : raw).trim();
+
+            const idx = users.findIndex(u => String(u.username || '').trim().toLowerCase() === candidate.toLowerCase());
+            if (idx !== -1) {
+                users[idx].balance = (Number(users[idx].balance) || 0) + safeAmount;
+                saveUsers(users);
+
+                const activeUser = getCurrentUser();
+                if (activeUser && activeUser.toLowerCase() === String(users[idx].username).toLowerCase()) {
+                    setGuestBalance(users[idx].balance);
+                }
+                return { targetName: users[idx].username, matchedUser: true };
+            }
+
+            setGuestBalance(getGuestBalance() + safeAmount);
+            return { targetName: 'Ví khách', matchedUser: false };
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            const orders = getOrders();
+            const idx = orders.findIndex(o => o.id === orderId);
+            if (idx === -1) return;
+
+            const ord = orders[idx];
+            const prevStatus = ord.status || 'Đang xử Lí';
+            ord.status = newStatus;
+
+            const autoRefund = Boolean(document.getElementById('autoRefundToggle')?.checked);
+            let refundedAmount = 0;
+
+            if (newStatus === 'Từ Chối' && prevStatus !== 'Từ Chối' && autoRefund && ord.paidByBalance && !ord.refunded) {
+                refundedAmount = Number(ord.total) || 0;
+                addBalanceToTargetAccount(ord.webUsername || ord.username, refundedAmount);
+                ord.refunded = true;
+            }
+
+            orders[idx] = ord;
+            saveOrders(orders);
+            renderAllAdminViews();
+            emitStoreSync(`ORDER_${orderId}_${newStatus}`);
+
+            if (refundedAmount > 0) {
+                showToast(`Đơn #${orderId} → Từ Chối & hoàn ${formatVND(refundedAmount)} vào số dư!`, 'success');
+            } else {
+                showToast(`Đơn dịch vụ #${orderId} → ${newStatus}`, 'success');
+            }
+        }
+
+        function getTopupStatusBadge(status) {
+            if (status === 'Đã Duyệt' || status === 'Đã Hoàn Thành') {
+                return `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-bold inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Đã Duyệt</span>`;
+            }
+            if (status === 'Từ Chối') {
+                return `<span class="px-2.5 py-1 rounded-lg bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-bold inline-flex items-center gap-1"><i class="fa-solid fa-circle-xmark"></i> Từ Chối</span>`;
+            }
+            return `<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold inline-flex items-center gap-1"><i class="fa-solid fa-clock"></i> Chờ Duyệt</span>`;
+        }
+
+        function renderTopupsTab() {
+            const listEl = document.getElementById('adminTopupsList');
+            if (!listEl) return;
+
+            const filter = document.getElementById('topupStatusFilter')?.value || 'all';
+            const topups = getTopups();
+            const filtered = topups.filter(t => {
+                const st = t.status || 'Chờ Duyệt';
+                return filter === 'all' || st === filter;
+            });
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = `
+                    <div class="p-8 rounded-2xl bg-gaming-card border border-gaming-border text-center space-y-1.5">
+                        <div class="w-11 h-11 mx-auto rounded-2xl bg-gaming-bg border border-gaming-border flex items-center justify-center text-slate-400">
+                            <i class="fa-solid fa-money-bill-transfer"></i>
+                        </div>
+                        <p class="text-sm font-bold text-white">Không có yêu cầu nạp tiền nào</p>
+                        <p class="text-xs text-slate-400">Khi khách gửi thẻ cào trên hoangnamshopvip, yêu cầu sẽ hiện tại đây để bạn duyệt tiền vào acc.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(item => {
+                const st = item.status || 'Chờ Duyệt';
+                const canApprove = st !== 'Đã Duyệt' && st !== 'Đã Hoàn Thành';
+                const canReject = st !== 'Từ Chối';
+
+                return `
+                    <article class="p-4 rounded-2xl bg-gaming-card border border-gaming-border flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+                        <div class="space-y-1.5 text-xs min-w-0">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <span class="font-mono font-extrabold text-sm text-[#00d2ff]">#${item.id}</span>
+                                ${getTopupStatusBadge(st)}
+                                <span class="text-[11px] text-slate-400">${item.time || ''}</span>
+                            </div>
+
+                            <div class="font-bold text-white">
+                                Acc nhận tiền: <span class="text-indigo-300">${item.username || 'Khách hàng'}</span>
+                                • Số tiền: <span class="font-display font-extrabold text-sm text-emerald-400">+${formatVND(item.amount)}</span>
+                            </div>
+
+                            <div class="text-[11px] text-slate-300">
+                                Hình thức: <strong class="text-cyan-200">${item.method || 'Nạp tiền'}</strong>
+                                ${item.note ? ` • <span class="text-slate-400">${item.note}</span>` : ''}
+                            </div>
+
+                            ${(item.serial || item.pin) ? `
+                                <div class="p-2 rounded-xl bg-gaming-bg border border-gaming-border/70 font-mono text-[11px] text-slate-300 flex flex-wrap gap-3">
+                                    <span>Seri: <strong class="text-amber-300">${item.serial || '---'}</strong></span>
+                                    <span>Mã thẻ: <strong class="text-[#00d2ff]">${item.pin || '---'}</strong></span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                            ${canApprove ? `
+                                <button type="button" onclick="approveTopup('${item.id}')"
+                                    class="flex-1 sm:flex-initial py-2.5 px-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                                    <i class="fa-solid fa-check"></i> Duyệt vào acc
+                                </button>
+                            ` : ''}
+
+                            ${canReject ? `
+                                <button type="button" onclick="rejectTopup('${item.id}')"
+                                    class="flex-1 sm:flex-initial py-2.5 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold text-xs flex items-center justify-center gap-1.5 active:scale-95 transition-transform">
+                                    <i class="fa-solid fa-xmark"></i> Từ Chối
+                                </button>
+                            ` : ''}
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function approveTopup(topupId) {
+            const topups = getTopups();
+            const idx = topups.findIndex(t => t.id === topupId);
+            if (idx === -1) return;
+
+            const item = topups[idx];
+            if (item.status === 'Đã Duyệt' || item.status === 'Đã Hoàn Thành') return;
+
+            const amount = Math.max(0, Number(item.amount) || 0);
+            item.status = 'Đã Duyệt';
+            item.note = `${item.method || 'Nạp tiền'} (${formatVND(amount)}) - Đã Duyệt`;
+            topups[idx] = item;
+            saveTopups(topups);
+
+            const targetInfo = addBalanceToTargetAccount(item.username, amount);
+
+            const orders = getOrders();
+            const alreadyLogged = orders.some(o => o.topupRefId === topupId);
+            if (!alreadyLogged) {
+                orders.unshift({
+                    id: nextOrderCode(),
+                    ownerUsername: item.ownerUsername || (targetInfo.matchedUser ? targetInfo.targetName : null),
+                    isGuest: !item.ownerUsername && !targetInfo.matchedUser,
+                    historyKind: 'topup',
+                    topupRefId: topupId,
+                    items: `Nạp tiền ${item.method || 'Thẻ cào'} (+${formatVND(amount)}) #${topupId}`,
+                    username: item.username || targetInfo.targetName,
+                    total: amount,
+                    method: item.method || 'Nạp tiền',
+                    status: 'Đã Hoàn Thành',
+                    paidByBalance: false,
+                    refunded: false,
+                    time: new Date().toLocaleString('vi-VN')
+                });
+                saveOrders(orders);
+            }
+
+            renderAllAdminViews();
+            emitStoreSync(`TOPUP_APPROVED_${topupId}`);
+            showToast(`Đã duyệt #${topupId} & cộng +${formatVND(amount)} vào acc ${targetInfo.targetName}!`, 'success');
+        }
+
+        function rejectTopup(topupId) {
+            const topups = getTopups();
+            const idx = topups.findIndex(t => t.id === topupId);
+            if (idx === -1) return;
+
+            const item = topups[idx];
+            item.status = 'Từ Chối';
+            item.note = `${item.method || 'Nạp tiền'} (${formatVND(item.amount || 0)}) - Từ Chối`;
+            topups[idx] = item;
+            saveTopups(topups);
+
+            renderAllAdminViews();
+            emitStoreSync(`TOPUP_REJECTED_${topupId}`);
+            showToast(`Đã từ chối yêu cầu nạp #${topupId}.`, 'success');
+        }
+
+        function getAccountMetrics(userObj) {
+            const uname = String((userObj && userObj.username) || '').trim();
+            const unameLower = uname.toLowerCase();
+            const orders = getOrders().filter(o => o.historyKind !== 'topup');
+            const topups = getTopups();
+
+            const userOrders = orders.filter(o =>
+                String(o.ownerUsername || '').trim().toLowerCase() === unameLower ||
+                String(o.username || '').toLowerCase().includes(unameLower) ||
+                String(o.webUsername || '').toLowerCase() === unameLower
+            );
+
+            const userTopups = topups.filter(t =>
+                String(t.ownerUsername || t.username || '').trim().toLowerCase() === unameLower
+            );
+
+            const totalTopupApproved = userTopups
+                .filter(t => t.status === 'Đã Duyệt' || t.status === 'Đã Hoàn Thành')
+                .reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+
+            const totalSpent = userOrders
+                .filter(o => o.status !== 'Từ Chối')
+                .reduce((sum, o) => sum + (Number(o.total) || 0), 0);
+
+            const activeUser = getCurrentUser();
+            const isOnlineOnStore = Boolean(activeUser && activeUser.trim().toLowerCase() === unameLower);
+
+            return {
+                username: uname,
+                avatarInitial: (uname.charAt(0) || 'U').toUpperCase(),
+                balance: Number((userObj && userObj.balance) || 0),
+                isOnlineOnStore,
+                userOrders,
+                userTopups,
+                orderCount: userOrders.length,
+                topupCount: userTopups.length,
+                totalTopupApproved,
+                totalSpent
+            };
+        }
+
+        function openAccountDetailModal(username) {
+            const targetLower = String(username || '').trim().toLowerCase();
+            if (!targetLower) return;
+            inspectedAccountLower = targetLower;
+            renderAccountDetailModal();
+            const modal = document.getElementById('accountDetailModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeAccountDetailModal() {
+            inspectedAccountLower = null;
+            const modal = document.getElementById('accountDetailModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function applyCustomAccountBalanceFromModal(username) {
+            const inputEl = document.getElementById('modalCustomBalanceInput');
+            if (!inputEl) return;
+            const parsed = parseInt(String(inputEl.value || '').replace(/[^0-9-]/g, ''), 10);
+            if (Number.isNaN(parsed) || parsed < 0) {
+                showToast('Vui lòng nhập số dư hợp lệ (>= 0đ)!', 'error');
+                return;
+            }
+            const users = getUsers();
+            const idx = users.findIndex(u => String(u.username || '').trim().toLowerCase() === String(username).trim().toLowerCase());
+            if (idx === -1) return;
+
+            users[idx].balance = parsed;
+            saveUsers(users);
+
+            const activeUser = getCurrentUser();
+            if (activeUser && activeUser.toLowerCase() === String(users[idx].username).toLowerCase()) {
+                setGuestBalance(parsed);
+            }
+
+            renderAllAdminViews();
+            renderAccountDetailModal();
+            emitStoreSync(`SET_BALANCE_${users[idx].username}`);
+            showToast(`Đã cập nhật số dư ${users[idx].username}: ${formatVND(parsed)}`, 'success');
+        }
+
+        function renderAccountDetailModal() {
+            const bodyEl = document.getElementById('accountDetailModalBody');
+            if (!bodyEl || !inspectedAccountLower) return;
+
+            const users = getUsers();
+            const userIdx = users.findIndex(u => String(u.username || '').trim().toLowerCase() === inspectedAccountLower);
+            if (userIdx === -1) {
+                closeAccountDetailModal();
+                return;
+            }
+
+            const metrics = getAccountMetrics(users[userIdx]);
+
+            bodyEl.innerHTML = `
+                <div class="p-4 rounded-2xl bg-gaming-bg border border-[#00d2ff]/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+                    <div class="flex items-center gap-3.5 min-w-0">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#00d2ff] via-blue-500 to-[#6366f1] text-slate-950 font-display font-extrabold text-xl flex items-center justify-center shrink-0 shadow-neon-cyan">
+                            ${metrics.avatarInitial}
+                        </div>
+                        <div class="min-w-0 space-y-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h4 class="font-display font-bold text-base text-white truncate">${metrics.username}</h4>
+                                ${metrics.isOnlineOnStore
+                                    ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">● Đang hoạt động trên Shop VIP</span>`
+                                    : `<span class="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold">Tài khoản Shop VIP</span>`
+                                }
+                            </div>
+                            <p class="text-[11px] text-slate-400">Dữ liệu cô lập riêng theo tài khoản trên hoangnamshopvip</p>
+                        </div>
+                    </div>
+
+                    <div class="sm:text-right shrink-0">
+                        <div class="text-[11px] text-slate-400">Số dư hiện tại</div>
+                        <div class="font-display font-extrabold text-xl text-[#00d2ff]">${formatVND(metrics.balance)}</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border">
+                        <div class="text-[10px] text-slate-400 uppercase font-semibold">Số dư ví</div>
+                        <div class="font-display font-extrabold text-sm text-[#00d2ff] mt-0.5">${formatVND(metrics.balance)}</div>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border">
+                        <div class="text-[10px] text-slate-400 uppercase font-semibold">Tổng nạp duyệt</div>
+                        <div class="font-display font-extrabold text-sm text-emerald-400 mt-0.5">${formatVND(metrics.totalTopupApproved)}</div>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border">
+                        <div class="text-[10px] text-slate-400 uppercase font-semibold">Đã chi tiêu</div>
+                        <div class="font-display font-extrabold text-sm text-amber-400 mt-0.5">${formatVND(metrics.totalSpent)}</div>
+                    </div>
+                    <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border">
+                        <div class="text-[10px] text-slate-400 uppercase font-semibold">Đơn / Lần nạp</div>
+                        <div class="font-display font-extrabold text-sm text-indigo-300 mt-0.5">${metrics.orderCount} đơn • ${metrics.topupCount} nạp</div>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-gaming-bg border border-gaming-border space-y-2.5">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
+                        <span class="font-bold text-white">Cộng / Đặt số dư trực tiếp vào tài khoản</span>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="adjustUserBalance(${userIdx}, 10000); renderAccountDetailModal();" class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-bold text-[11px]">+10k</button>
+                            <button type="button" onclick="adjustUserBalance(${userIdx}, 50000); renderAccountDetailModal();" class="px-2.5 py-1 rounded-lg bg-[#00d2ff]/15 hover:bg-[#00d2ff]/25 border border-[#00d2ff]/40 text-[#00d2ff] font-bold text-[11px]">+50k</button>
+                            <button type="button" onclick="adjustUserBalance(${userIdx}, -10000); renderAccountDetailModal();" class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold text-[11px]">-10k</button>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <input type="number" id="modalCustomBalanceInput" min="0" step="1000" value="${metrics.balance}"
+                            placeholder="Nhập số dư mới (VNĐ)..."
+                            class="flex-1 bg-gaming-card border border-gaming-border focus:border-[#00d2ff] rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none">
+                        <button type="button" onclick="applyCustomAccountBalanceFromModal('${metrics.username.replace(/'/g, "\\'")}')"
+                            class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-[#00d2ff] to-[#6366f1] text-slate-950 font-extrabold text-xs shrink-0 active:scale-95 transition-transform">
+                            Lưu số dư
+                        </button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h5 class="font-display font-bold text-xs uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-receipt text-[#00d2ff]"></i> Lịch sử dịch vụ của ${metrics.username} (${metrics.userOrders.length})
+                    </h5>
+                    ${metrics.userOrders.length === 0
+                        ? `<div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border/70 text-slate-400">Tài khoản này chưa có đơn dịch vụ nào.</div>`
+                        : `<div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            ${metrics.userOrders.map(ord => `
+                                <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border/80 flex flex-wrap items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-white"><span class="font-mono text-[#00d2ff]">#${ord.id}</span> • ${ord.items || ''}</div>
+                                        <div class="text-[11px] text-slate-400">${ord.username || ''} • ${ord.time || ''}</div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="font-display font-bold text-amber-400">${formatVND(ord.total)}</div>
+                                        <div class="mt-0.5">${getOrderStatusBadge(ord.status || 'Đang xử Lí')}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>`
+                    }
+                </div>
+
+                <div class="space-y-2">
+                    <h5 class="font-display font-bold text-xs uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-money-bill-transfer text-emerald-400"></i> Lịch sử nạp tiền của ${metrics.username} (${metrics.userTopups.length})
+                    </h5>
+                    ${metrics.userTopups.length === 0
+                        ? `<div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border/70 text-slate-400">Tài khoản này chưa có yêu cầu nạp tiền nào.</div>`
+                        : `<div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                            ${metrics.userTopups.map(tp => `
+                                <div class="p-3 rounded-xl bg-gaming-bg border border-gaming-border/80 flex flex-wrap items-center justify-between gap-2">
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-white"><span class="font-mono text-amber-300">#${tp.id}</span> • ${tp.method || 'Nạp tiền'}</div>
+                                        <div class="text-[11px] text-slate-400">${tp.note || ''} • ${tp.time || ''}</div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="font-display font-bold text-emerald-400">+${formatVND(tp.amount)}</div>
+                                        <div class="mt-0.5">${getTopupStatusBadge(tp.status || 'Chờ Duyệt')}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>`
+                    }
+                </div>
+            `;
+        }
+
+        function renderAccountsTab() {
+            const tbody = document.getElementById('adminAccountsTableBody');
+            const cardsGrid = document.getElementById('adminAccountCardsGrid');
+            if (!tbody) return;
+
+            const query = (document.getElementById('accountSearchInput')?.value || '').trim().toLowerCase();
+            const users = getUsers();
+
+            const guestEl = document.getElementById('guestBalanceValue');
+            if (guestEl) guestEl.textContent = formatVND(getGuestBalance());
+
+            const indexedUsers = users
+                .map((u, idx) => ({ user: u, idx, metrics: getAccountMetrics(u) }))
+                .filter(item => !query || item.metrics.username.toLowerCase().includes(query));
+
+            if (cardsGrid) {
+                cardsGrid.innerHTML = indexedUsers.map(({ metrics }) => {
+                    const safeName = metrics.username.replace(/'/g, "\\'");
+                    return `
+                        <article onclick="openAccountDetailModal('${safeName}')"
+                            class="cursor-pointer p-3.5 rounded-2xl bg-gaming-card hover:bg-gaming-cardHover border border-gaming-border hover:border-[#00d2ff]/55 transition-all space-y-2.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2.5 min-w-0">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d2ff] to-[#6366f1] text-slate-950 font-display font-extrabold text-sm flex items-center justify-center shrink-0">
+                                        ${metrics.avatarInitial}
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-bold text-xs sm:text-sm text-white truncate">${metrics.username}</div>
+                                        <div class="text-[10px] text-slate-400 truncate">Xem chi tiết tài khoản</div>
+                                    </div>
+                                </div>
+                                ${metrics.isOnlineOnStore
+                                    ? `<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold shrink-0">Online</span>`
+                                    : `<span class="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold shrink-0">Shop VIP</span>`
+                                }
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-1.5 pt-2 border-t border-gaming-border/70 text-center">
+                                <div class="p-1.5 rounded-lg bg-gaming-bg">
+                                    <div class="text-[10px] text-slate-400">Số dư</div>
+                                    <div class="font-display font-extrabold text-xs text-[#00d2ff] truncate">${formatVND(metrics.balance)}</div>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-gaming-bg">
+                                    <div class="text-[10px] text-slate-400">Dịch vụ</div>
+                                    <div class="font-display font-bold text-xs text-amber-300">${metrics.orderCount}</div>
+                                </div>
+                                <div class="p-1.5 rounded-lg bg-gaming-bg">
+                                    <div class="text-[10px] text-slate-400">Đã nạp</div>
+                                    <div class="font-display font-bold text-xs text-emerald-400 truncate">${formatVND(metrics.totalTopupApproved)}</div>
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+            }
+
+            if (indexedUsers.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 px-4 text-center text-slate-400">
+                            ${users.length === 0
+                                ? 'Chưa có tài khoản khách hàng nào trên hoangnamshopvip.'
+                                : 'Không tìm thấy tài khoản nào phù hợp.'}
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = indexedUsers.map(({ idx, metrics }) => {
+                const safeName = metrics.username.replace(/'/g, "\\'");
+                return `
+                    <tr class="hover:bg-gaming-cardHover/80 transition-colors">
+                        <td class="py-3 px-3.5 font-bold text-white">
+                            <button type="button" onclick="openAccountDetailModal('${safeName}')" class="flex items-center gap-2.5 text-left group">
+                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#00d2ff] to-[#6366f1] text-slate-950 font-display font-extrabold text-xs flex items-center justify-center shrink-0">
+                                    ${metrics.avatarInitial}
+                                </div>
+                                <span class="truncate max-w-[160px] text-white group-hover:text-[#00d2ff] transition-colors">${metrics.username}</span>
+                            </button>
+                        </td>
+                        <td class="py-3 px-3.5 font-display font-extrabold text-[#00d2ff]">${formatVND(metrics.balance)}</td>
+                        <td class="py-3 px-3.5 text-center font-bold text-amber-300">${metrics.orderCount}</td>
+                        <td class="py-3 px-3.5 font-display font-bold text-emerald-400">${formatVND(metrics.totalTopupApproved)}</td>
+                        <td class="py-3 px-3.5 text-right">
+                            <div class="inline-flex flex-wrap justify-end items-center gap-1.5">
+                                <button type="button" onclick="openAccountDetailModal('${safeName}')"
+                                    class="px-2.5 py-1 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-[#00d2ff]/45 text-[#00d2ff] font-bold text-[11px] active:scale-95 transition-transform">
+                                    Chi tiết
+                                </button>
+                                <button type="button" onclick="adjustUserBalance(${idx}, 10000)"
+                                    class="px-2.5 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-bold text-[11px] active:scale-95 transition-transform">
+                                    +10k
+                                </button>
+                                <button type="button" onclick="adjustUserBalance(${idx}, 50000)"
+                                    class="px-2.5 py-1 rounded-lg bg-[#00d2ff]/15 hover:bg-[#00d2ff]/25 border border-[#00d2ff]/40 text-[#00d2ff] font-bold text-[11px] active:scale-95 transition-transform">
+                                    +50k
+                                </button>
+                                <button type="button" onclick="adjustUserBalance(${idx}, -10000)"
+                                    class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/40 text-rose-300 font-bold text-[11px] active:scale-95 transition-transform">
+                                    -10k
+                                </button>
+                                <button type="button" onclick="setUserBalanceDirect(${idx})"
+                                    class="px-2.5 py-1 rounded-lg bg-[#6366f1]/20 hover:bg-[#6366f1]/30 border border-[#6366f1]/45 text-indigo-200 font-bold text-[11px] active:scale-95 transition-transform">
+                                    Đặt số dư
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function adjustUserBalance(index, delta) {
+            const users = getUsers();
+            if (!users[index]) return;
+
+            const current = Number(users[index].balance) || 0;
+            const updated = Math.max(0, current + delta);
+            users[index].balance = updated;
+            saveUsers(users);
+
+            const activeUser = getCurrentUser();
+            if (activeUser && activeUser.toLowerCase() === String(users[index].username).toLowerCase()) {
+                setGuestBalance(updated);
+            }
+
+            renderAllAdminViews();
+            emitStoreSync(`BALANCE_${users[index].username}`);
+            const label = delta >= 0 ? `+${formatVND(delta)}` : `-${formatVND(Math.abs(delta))}`;
+            showToast(`${users[index].username} (${label}) → ${formatVND(updated)}`, 'success');
+        }
+
+        function setUserBalanceDirect(index) {
+            const users = getUsers();
+            if (!users[index]) return;
+
+            const current = Number(users[index].balance) || 0;
+            const rawInput = window.prompt(`Nhập số dư mới (VNĐ) cho tài khoản "${users[index].username}":`, String(current));
+            if (rawInput === null) return;
+
+            const parsed = parseInt(String(rawInput).replace(/[^0-9-]/g, ''), 10);
+            if (Number.isNaN(parsed) || parsed < 0) {
+                showToast('Số dư nhập vào không hợp lệ!', 'error');
+                return;
+            }
+
+            users[index].balance = parsed;
+            saveUsers(users);
+
+            const activeUser = getCurrentUser();
+            if (activeUser && activeUser.toLowerCase() === String(users[index].username).toLowerCase()) {
+                setGuestBalance(parsed);
+            }
+
+            renderAllAdminViews();
+            emitStoreSync(`SET_BALANCE_${users[index].username}`);
+            showToast(`Đã đặt số dư ${users[index].username} thành ${formatVND(parsed)}!`, 'success');
+        }
+
+        function adjustGuestBalance(delta) {
+            const updated = Math.max(0, getGuestBalance() + delta);
+            setGuestBalance(updated);
+            renderAllAdminViews();
+            emitStoreSync('GUEST_BALANCE_ADJUSTED');
+            showToast(`Ví khách hiện tại: ${formatVND(updated)}`, 'success');
+        }
+
+        function setGuestBalanceDirect() {
+            const current = getGuestBalance();
+            const rawInput = window.prompt('Nhập số dư mới (VNĐ) cho ví khách hiện tại:', String(current));
+            if (rawInput === null) return;
+
+            const parsed = parseInt(String(rawInput).replace(/[^0-9-]/g, ''), 10);
+            if (Number.isNaN(parsed) || parsed < 0) {
+                showToast('Số dư không hợp lệ!', 'error');
+                return;
+            }
+
+            setGuestBalance(parsed);
+            renderAllAdminViews();
+            emitStoreSync('GUEST_BALANCE_SET');
+            showToast(`Đã đặt ví khách thành ${formatVND(parsed)}!`, 'success');
+        }
+
+        function renderAllAdminViews() {
+            renderOverviewTab();
+            renderTopupsTab();
+            renderOrdersTab();
+            renderAccountsTab();
+            if (inspectedAccountLower) {
+                renderAccountDetailModal();
+            }
+        }
+
+        function exportBackupJson() {
+            try {
+                const payload = {
+                    exportedAt: new Date().toISOString(),
+                    brand: 'HoangNam Store',
+                    shopUrl: SHOP_URL,
+                    data: {
+                        users: getUsers(),
+                        currentUser: getCurrentUser(),
+                        guestBalance: getGuestBalance(),
+                        orders: getOrders(),
+                        topups: getTopups(),
+                        orderSeq: getOrderSeq()
+                    }
+                };
+                const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                const stamp = new Date().toISOString().slice(0, 10);
+                a.href = url;
+                a.download = `hoangnam-shopvip-backup-${stamp}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                addSyncLog('Đã xuất file JSON dự phòng hoangnamshopvip');
+                showToast('Đã xuất file JSON dự phòng thành công!', 'success');
+            } catch (_) {
+                showToast('Không thể xuất file JSON dự phòng.', 'error');
+            }
+        }
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            const isError = type === 'error';
+
+            toast.className = `pointer-events-auto p-3 rounded-xl border shadow-xl flex items-center gap-2.5 text-xs font-semibold transition-all duration-300 transform translate-y-2 opacity-0 ${
+                isError
+                    ? 'bg-rose-950/95 border-rose-500/60 text-rose-100'
+                    : 'bg-gaming-card/95 border-[#00d2ff]/50 text-white'
+            }`;
+
+            toast.innerHTML = `
+                <i class="fa-solid ${isError ? 'fa-circle-exclamation text-rose-400' : 'fa-circle-check text-[#00d2ff]'} text-base shrink-0"></i>
+                <span class="flex-1 leading-snug">${message}</span>
+            `;
+
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3400);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            lastSnapshotSignature = computeSnapshotSignature();
+            mergeStoredActivityLogs();
+            setupRealtimeSync();
+
+            const detailModal = document.getElementById('accountDetailModal');
+            if (detailModal) {
+                detailModal.addEventListener('click', (e) => {
+                    if (e.target === detailModal) closeAccountDetailModal();
+                });
+            }
+
+            if (hasValidAdminSession()) {
+                showAdminShell();
+            } else {
+                document.getElementById('adminLoginScreen').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
